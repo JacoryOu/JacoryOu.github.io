@@ -1,21 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Hello World</title>
-    <url>/2023/07/19/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+    <title>RT Thread 启用C++特性 浮点数的坑</title>
+    <url>/2023/07/21/RT-Thread-%E5%90%AF%E7%94%A8C-%E7%89%B9%E6%80%A7-%E6%B5%AE%E7%82%B9%E6%95%B0%E7%9A%84%E5%9D%91/</url>
+    <content><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><p>大家好，这篇博客记录了我在RTThread 中使用C++中出现的一个问题</p>
+<h2 id="RTThread中的一个正常使用浮点数程序"><a href="#RTThread中的一个正常使用浮点数程序" class="headerlink" title="RTThread中的一个正常使用浮点数程序"></a>RTThread中的一个正常使用浮点数程序</h2><figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DBG_TAG <span class="string">&quot;main&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DBG_LVL DBG_LOG</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdbg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> count = <span class="number">1</span>;</span><br><span class="line">    <span class="type">float</span> test_float = <span class="number">0.3f</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the test float is %f\r\n&quot;</span>, test_float);</span><br><span class="line">    <span class="keyword">while</span> (count++)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_D(<span class="string">&quot;Hello RT-Thread!&quot;</span>);</span><br><span class="line">        rt_thread_mdelay(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">输出的结果：</span><br><span class="line"></span><br><span class="line"> \ | /</span><br><span class="line">- RT -     Thread Operating System</span><br><span class="line"> / | \     4.0.3 build Jul 22 2023</span><br><span class="line"> 2006 - 2020 Copyright by rt-thread team</span><br><span class="line">the test float is 0.300000</span><br><span class="line">[D/main] Hello RT-Thread!</span><br><span class="line">msh &gt;[D/main] Hello RT-Thread!</span><br><span class="line">[D/main] Hello RT-Thread!</span><br><span class="line">[D/main] Hello RT-Thread!</span><br><span class="line">[D/main] Hello RT-Thread!</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>这是能够正常显示出浮点数的例程</p>
+<p>下面是该工程的配置：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JacoryOu/Images/img/screenCapture_0_70614843_2601600091.png" alt="screenCapture_0_70614843_2601600091"></p>
+<h2 id="RTTHread启用了C-特性的工程后"><a href="#RTTHread启用了C-特性的工程后" class="headerlink" title="RTTHread启用了C++特性的工程后"></a>RTTHread启用了C++特性的工程后</h2><p>这是工程的配置图：</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JacoryOu/Images/img/screenCapture_0_71964265_4172991651.png" alt="screenCapture_0_71964265_4172991651"></p>
+<p>用的是一样的代码：</p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtthread.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DBG_TAG <span class="string">&quot;main&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">define</span> DBG_LVL DBG_LOG</span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;rtdbg.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="type">int</span> <span class="title function_">main</span><span class="params">(<span class="type">void</span>)</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="type">int</span> count = <span class="number">1</span>;</span><br><span class="line">    <span class="type">float</span> test_float = <span class="number">0.3f</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;the test float is %f\r\n&quot;</span>, test_float);</span><br><span class="line">    <span class="keyword">while</span> (count++)</span><br><span class="line">    &#123;</span><br><span class="line">        LOG_D(<span class="string">&quot;Hello RT-Thread!&quot;</span>);</span><br><span class="line">        rt_thread_mdelay(<span class="number">1000</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> RT_EOK;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">这是运行的结果：</span><br><span class="line"> \ | /</span><br><span class="line">- RT -     Thread Operating System</span><br><span class="line"> / | \     4.0.3 build Jul 22 2023</span><br><span class="line"> 2006 - 2020 Copyright by rt-thread team</span><br><span class="line">the test float is</span><br><span class="line">[D/main] Hello RT-Thread!</span><br><span class="line">msh &gt;[D/main] Hello RT-Thread!</span><br></pre></td></tr></table></figure>
 
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>该结果显示float的数字为空</p>
+<h2 id="解决的办法"><a href="#解决的办法" class="headerlink" title="解决的办法"></a>解决的办法</h2><p>出现该现象是由于RTThread Studio 在编译C++的时候，C++编译选项的问题造成的，这个造成了无论使用什么标准C库的进行格式化输出都不可以，所以无论是使用printf或者snprintf，或者使用sprintf 都不能正确的显示出浮点数出来，都是为空。</p>
+<p>下面给出解决方法：</p>
+<ol>
+<li><p>首先打开工程的构建配置，如下图框框的位置</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JacoryOu/Images/img/screenCapture_0_72582531_4279479352.png" alt="screenCapture_0_72582531_4279479352"></p>
+</li>
+<li><p>然后按照图片上的设置的位置找到 Use float with nano printf (-u _printf_float) 这个选项然后勾上</p>
+<p><img src="https://cdn.jsdelivr.net/gh/JacoryOu/Images/img/screenCapture_0_72906609_3527624931.png" alt="screenCapture_0_72906609_3527624931"></p>
+</li>
+<li><p>勾选上然后重新编译下载后，就能够正常的显示float类型的数值了</p>
+</li>
+</ol>
+<h2 id="感想"><a href="#感想" class="headerlink" title="感想"></a>感想</h2><p>因为这个显示的问题我在网上找了很多关于RTThread在显示float数值的问题，改写rt_kprintf的函数，使用标准C库中的vnprintf函数，或者说ulog日志配置成可以显示float，使用rt_kprintf或者LOG_I等函数就可以正常显示出浮点数的数值，当然这个在没有启动C++特性的时候使用这个方法当然可以，但是当使用C++特性的时候，这些方法都不可以，因为系统默认构建C++的时候并没有启动显示浮点数的功能。最后第一次写博客，希望能够帮助到大家，我有什么说错的地方大家也可以留言。</p>
 ]]></content>
+      <tags>
+        <tag>rtthread</tag>
+      </tags>
   </entry>
 </search>
